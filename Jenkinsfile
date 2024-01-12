@@ -3,6 +3,14 @@ pipeline {
         label 'devops'
     }
 
+    environment {
+        ECR_REPOSITORY_URL = '992906191722.dkr.ecr.eu-west-3.amazonaws.com/devopsdemorepo'
+        DOCKER_IMAGE_NAME = 'devopsdemoimage'
+        DOCKER_IMAGE_TAG = 'latest'
+        DOCKERFILE_PATH = 'Dockerfile'
+        AWS_CREDENTIALS_ID = 'aws-ecr'
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -13,22 +21,13 @@ pipeline {
         stage('Build and Push Docker Image') {
             steps {
                 script {
-                    echo 'test are working bkk n'
-                    def ecrRepositoryUrl = '992906191722.dkr.ecr.eu-west-3.amazonaws.com/devopsdemorepo'
-                    def dockerImageName = 'devopsdemoimage'
-                    def dockerImageTag = 'latest'
-                    def dockerfilePath = 'Dockerfile'
-
                     // Build Docker image
-                    sh "docker build -t ${ecrRepositoryUrl}/${dockerImageName}:${dockerImageTag} -f ${dockerfilePath} ."
+                    sh "docker build -t ${ECR_REPOSITORY_URL}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} -f ${DOCKERFILE_PATH} ."
 
-                    // Push Docker image to AWS ECR using AWS credentials stored in Jenkins
-                    withAws(credentials: 'aws-credentials', region: 'eu-west-3') {
-                        // Tag Docker image for AWS ECR
-                        sh "docker tag ${ecrRepositoryUrl}/${dockerImageName}:${dockerImageTag} ${ecrRepositoryUrl}/${dockerImageName}:${dockerImageTag}"
-
+                    // Configure Docker login to AWS ECR
+                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: AWS_CREDENTIALS_ID, accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
                         // Push Docker image to AWS ECR
-                        sh "docker push ${ecrRepositoryUrl}/${dockerImageName}:${dockerImageTag}"
+                        sh "docker push ${ECR_REPOSITORY_URL}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
                     }
                 }
             }
