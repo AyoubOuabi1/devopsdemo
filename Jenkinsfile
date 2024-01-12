@@ -13,7 +13,7 @@ pipeline {
         stage('Build and Push Docker Image') {
             steps {
                 script {
-                    echo 'test are working  '
+                    echo 'test are working bkk '
                     def ecrRepositoryUrl = '992906191722.dkr.ecr.eu-west-3.amazonaws.com/devopsdemorepo'
                     def dockerImageName = 'devopsdemoimage'
                     def dockerImageTag = 'latest'
