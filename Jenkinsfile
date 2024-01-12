@@ -1,8 +1,5 @@
 pipeline {
-    agent {
-        label 'devops-agent'
-    }
-
+    agent any
     stages {
         stage('Test') {
             steps {
