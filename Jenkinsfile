@@ -1,12 +1,11 @@
 pipeline {
     agent {
-        label 'ec2'
+        label 'devops-agent'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                // Checkout the source code from the Git repository
                 checkout scm
             }
         }
