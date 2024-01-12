@@ -23,7 +23,7 @@ pipeline {
                     sh "docker build -t ${ecrRepositoryUrl}/${dockerImageName}:${dockerImageTag} -f ${dockerfilePath} ."
 
                     // Push Docker image to AWS ECR using AWS credentials stored in Jenkins
-                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws-credentials', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                    withAws(credentials: 'aws-credentials', region: 'eu-west-3') {
                         // Tag Docker image for AWS ECR
                         sh "docker tag ${ecrRepositoryUrl}/${dockerImageName}:${dockerImageTag} ${ecrRepositoryUrl}/${dockerImageName}:${dockerImageTag}"
 
