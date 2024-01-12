@@ -29,8 +29,11 @@ pipeline {
                     // Get ECR login password
                     def ecrLoginCmd = sh(script: "aws ecr get-login-password --region eu-west-3", returnStdout: true).trim()
 
+                    // Extract the authentication token from the ECR login command
+                    def authToken = sh(script: "${ecrLoginCmd} | awk '{print $6}'", returnStdout: true).trim()
+
                     // Authenticate Docker with AWS ECR using the obtained token
-                    sh "${ecrLoginCmd}"
+                    sh "docker login -u AWS -p ${authToken} ${ECR_REPOSITORY_URL}"
 
                     // Push Docker image to AWS ECR
                     sh "docker push ${ECR_REPOSITORY_URL}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
