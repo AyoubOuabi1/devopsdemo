@@ -34,12 +34,13 @@ pipeline {
             steps {
                 script {
                     // Build Docker image
-                    sh "docker build -t ${ECR_REPOSITORY_URL}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} -f ${DOCKERFILE_PATH} ."
 
                     // Authenticate with ECR and push Docker image
                     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-                        sh "aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REPOSITORY_URL}"
-                        sh "docker push ${ECR_REPOSITORY_URL}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
+                        sh "aws ecr get-login-password --region eu-west-3 | docker login --username AWS --password-stdin 992906191722.dkr.ecr.eu-west-3.amazonaws.com"
+                        sh "docker build -t devopsdemorepo ."
+                        sh "docker tag devopsdemorepo:latest 992906191722.dkr.ecr.eu-west-3.amazonaws.com/devopsdemorepo:latest"
+                        sh "docker push 992906191722.dkr.ecr.eu-west-3.amazonaws.com/devopsdemorepo:latest"
                     }
                 }
             }
