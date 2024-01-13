@@ -9,36 +9,30 @@ pipeline {
         DOCKER_IMAGE_TAG = 'latest'
         DOCKERFILE_PATH = 'Dockerfile'
         AWS_CREDENTIALS_ID = 'aws-ecr'
+        AWS_REGION = 'eu-west-3'
+        ECR_REPO = '992906191722.dkr.ecr.eu-west-3.amazonaws.com/devopsdemorepo'
     }
 
-    stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
 
-        stage('Build and Push Docker Image') {
-            steps {
-                script {
-                    echo 'Tests are working. Building and pushing Docker image.'
+      stages {
+                stage('Check ECR Connection') {
+                    steps {
+                        script {
+                            // Authenticate with ECR
+                            withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                                def ecrLogin = sh(script: "aws ecr get-login-password --region ${AWS_REGION}", returnStdout: true).trim()
+                                sh "${ecrLogin}"
 
-                    // Build Docker image
-                    sh "docker build -t ${ECR_REPOSITORY_URL}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} -f ${DOCKERFILE_PATH} ."
-
-                    // Get ECR login password
-                    def ecrLoginCmd = sh(script: "aws ecr get-login-password --region eu-west-3", returnStdout: true).trim()
-
-                    // Extract the authentication token from the ECR login command
-                    def authToken = sh(script: "${ecrLoginCmd} | awk '{print \\\$6}'", returnStdout: true).trim()
-
-                    // Authenticate Docker with AWS ECR using the obtained token
-                    sh "docker login -u AWS -p ${authToken} ${ECR_REPOSITORY_URL}"
-
-                    // Push Docker image to AWS ECR
-                    sh "docker push ${ECR_REPOSITORY_URL}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
+                                // Check if authentication was successful
+                                def checkAuth = sh(script: "docker info | grep -q 'Authentication' && echo 'Success' || echo 'Failure'", returnStatus: true).trim()
+                                if (checkAuth == 'Success') {
+                                    echo "Successfully authenticated with ECR"
+                                } else {
+                                    error "Failed to authenticate with ECR"
+                                }
+                            }
+                        }
+                    }
                 }
-            }
-        }
     }
 }
