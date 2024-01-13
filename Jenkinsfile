@@ -1,7 +1,5 @@
 pipeline {
-    agent {
-        label 'devops'
-    }
+    agent any
 
     environment {
         ECR_REPOSITORY_URL = '992906191722.dkr.ecr.eu-west-3.amazonaws.com/devopsdemorepo'
