@@ -1,7 +1,5 @@
 pipeline {
-    agent {
-        label 'devops'
-    }
+    agent any
 
     environment {
         AWS_REGION = 'eu-west-3'  // Assuming your ECR repository is in this region
