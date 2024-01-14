@@ -45,6 +45,28 @@ pipeline {
                 }
             }
         }
+        stage('Deploy to ECS') {
+            steps {
+                script {
+                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                        // Assume your ECS cluster name is 'your-ecs-cluster'
+                        def ecsCluster = 'devopsdemo'
+
+                        // Assume your task definition file is named 'task_definition.json'
+                        def taskDefinitionFile = 'task_definition.json'
+
+                        // Specify security group(s) for the task
+                        def securityGroups = 'sg-0c7454444bf4bc6fb'
+
+                        // Create or update ECS service with security group(s)
+                        sh "aws ecs update-service --region ${AWS_REGION} --cluster ${ecsCluster} --service testservice --task-definition ${taskDefinitionFile} --network-configuration awsvpcConfiguration={securityGroups=[${securityGroups}]}"
+
+                        // Optionally, wait for the service to stabilize
+                        // sh "aws ecs wait services-stable --region ${AWS_REGION} --cluster ${ecsCluster} --services your-service-name"
+                    }
+                }
+            }
+        }
 
         // Add your other pipeline stages here, e.g., Deploy...
     }

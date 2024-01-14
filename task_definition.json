@@ -1,0 +1,47 @@
+{
+  "family": "testtask",
+  "containerDefinitions": [
+    {
+      "name": "devopsimage",
+      "image": "992906191722.dkr.ecr.eu-west-3.amazonaws.com/devopsdemorepo:latest",
+      "cpu": 0,
+      "portMappings": [
+        {
+          "name": "devopsimage-8080-tcp",
+          "containerPort": 8080,
+          "hostPort": 8080,
+          "protocol": "tcp",
+          "appProtocol": "http"
+        }
+      ],
+      "essential": true,
+      "environment": [],
+      "environmentFiles": [],
+      "mountPoints": [],
+      "volumesFrom": [],
+      "ulimits": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-create-group": "true",
+          "awslogs-group": "/ecs/testtask",
+          "awslogs-region": "eu-west-3",
+          "awslogs-stream-prefix": "ecs"
+        },
+        "secretOptions": []
+      }
+    }
+  ],
+  "taskRoleArn": "arn:aws:iam::992906191722:role/dev_role",
+  "executionRoleArn": "arn:aws:iam::992906191722:role/ecsTaskExecutionRole",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "1024",
+  "memory": "3072",
+  "runtimePlatform": {
+    "cpuArchitecture": "X86_64",
+    "operatingSystemFamily": "LINUX"
+  }
+}
