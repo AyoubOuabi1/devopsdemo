@@ -60,7 +60,7 @@ pipeline {
                         // Specify subnet(s) for the task
                         def subnets = 'subnet-01fc06fa9e29f357d'
                         // Create or update ECS service with security group(s)
-                        sh "aws ecs update-service --region ${AWS_REGION} --cluster ${ecsCluster} --service testservice --task-definition ${taskDefinitionFile} --network-configuration awsvpcConfiguration={securityGroups=[${securityGroups}],subnets=[${subnets}]}"
+                        sh "aws ecs update-service --region ${AWS_REGION} --cluster ${ecsCluster} --service testservice --task-definition ${taskDefinitionFile} --network-configuration 'awsvpcConfiguration={securityGroups=[${securityGroups}],subnets=[${subnets}]}'"
 
                         // Optionally, wait for the service to stabilize
                         // sh "aws ecs wait services-stable --region ${AWS_REGION} --cluster ${ecsCluster} --services your-service-name"
