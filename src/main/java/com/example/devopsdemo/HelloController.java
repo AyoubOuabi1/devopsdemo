@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/hello")
 public class HelloController {
 
-
-
     @GetMapping("")
    public String hello(){
         return "Hello World last test";
