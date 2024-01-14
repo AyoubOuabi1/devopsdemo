@@ -1,5 +1,4 @@
 {
-  "family": "testtask",
   "containerDefinitions": [
     {
       "name": "devopsimage",
