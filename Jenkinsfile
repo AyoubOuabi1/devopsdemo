@@ -51,13 +51,17 @@ pipeline {
             steps {
                 script {
                     // Read the task definition file
+                   // def taskDefinition = readJSON file: 'task_definition.json'
                     def taskDefinition = readJSON file: 'task_definition.json'
+                    echo "Original task definition JSON: ${taskDefinition}"
 
                     // Update the image tag
                     taskDefinition.containerDefinitions[0].image = "${ECR_REPOSITORY_URL}:${CUSTOM_TAG}"
 
                     // Write the updated task definition back to the file
                     writeJSON file: 'task_definition.json', json: taskDefinition
+                    echo "Updated task definition JSON: ${readFile('task_definition.json')}"
+
                 }
             }
         }
@@ -69,7 +73,7 @@ pipeline {
 
                         // Register the new task definition and capture its revision number
                         def registerOutput = sh(script: "aws ecs register-task-definition --cli-input-json file://task_definition.json", returnStdout: true).trim()
-                        def newRevision = // extract the revision number from registerOutput
+                        def newRevision = (registerOutput =~ /"revision": (\d+),/)[0][1]
 
                         // Update the ECS service with the new revision
                         sh "aws ecs update-service --region ${AWS_REGION} --cluster ${ecsCluster} --service dev_service --task-definition ayoub_task_def:${newRevision}"
@@ -80,6 +84,7 @@ pipeline {
                 }
             }
         }
+
 
         // Add your other pipeline stages here, e.g., Deploy...
     }
