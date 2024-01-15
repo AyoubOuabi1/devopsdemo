@@ -55,11 +55,11 @@ pipeline {
                         def ecsCluster = 'devopsdemo'
 
                         // Register the new task definition and capture its revision number
-                        def registerOutput = sh(script: "aws ecs register-task-definition --cli-input-json file://task_definition.json", returnStdout: true).trim()
-                        def newRevision = (registerOutput =~ /"revision": (\d+),/)[0][1]
+                        //def registerOutput = sh(script: "aws ecs register-task-definition --cli-input-json file://task_definition.json", returnStdout: true).trim()
+                        //def newRevision = (registerOutput =~ /"revision": (\d+),/)[0][1]
 
                         // Update the ECS service with the new revision
-                        sh "aws ecs update-service --region ${AWS_REGION} --cluster ${ecsCluster} --service dev_service --task-definition ayoub_task_def:${newRevision}"
+                        sh "aws ecs update-service --region ${AWS_REGION} --cluster ${ecsCluster} --service dev_service --task-definition ayoub_task_def"
 
                         // Optionally, wait for the service to stabilize
                         // sh "aws ecs wait services-stable --region ${AWS_REGION} --cluster ${ecsCluster} --services your-service-name"
