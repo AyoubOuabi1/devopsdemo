@@ -46,24 +46,25 @@ pipeline {
             }
         }
         stage('Deploy to ECS') {
-            steps {
-                script {
-                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-                        // Assume your ECS cluster name is 'your-ecs-cluster'
-                        def ecsCluster = 'devopsdemo'
+            stage('Deploy to ECS') {
+                 steps {
+                     script {
+                                                     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                                                         def ecsCluster = 'devopsdemo'
+                                                         def taskDefinitionFile = 'task_definition.json'
 
-                        // Assume your task definition file is named 'task_definition.json'
-                        def taskDefinitionFile = 'task_definition.json'
+                                                         // Register the new task definition (if needed)
+                                                         sh "aws ecs register-task-definition --cli-input-json file://${taskDefinitionFile}"
+                                                         def newRevision = sh(returnStdout: true, script: "aws ecs describe-task-definition --task-definition ${taskDefinitionFile} | jq -r '.taskDefinition.revision'").trim()
 
+                                                         // Update the ECS service with the new revision
+                                                         sh "aws ecs update-service --region ${AWS_REGION} --cluster ${ecsCluster} --service dev_service --task-definition ayoub_task_def:${newRevision}"
 
-                        // Create or update ECS service with security group(s)
-                        sh "aws ecs update-service --region eu-west-3 --cluster devopsdemo --service dev_service --task-definition ayoub_task_def"
-
-                        // Optionally, wait for the service to stabilize
-                        // sh "aws ecs wait services-stable --region ${AWS_REGION} --cluster ${ecsCluster} --services your-service-name"
-                    }
-                }
-            }
+                                                         // Optionally, wait for the service to stabilize
+                                                         // sh "aws ecs wait services-stable --region ${AWS_REGION} --cluster ${ecsCluster} --services your-service-name"
+                                                     }
+                                                 }
+                 }
         }
 
         // Add your other pipeline stages here, e.g., Deploy...
