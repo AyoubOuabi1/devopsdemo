@@ -51,8 +51,11 @@ pipeline {
         stage('Describe Task Definition') {
             steps {
                 script {
-                    def taskDefinition = sh(script: "aws ecs describe-task-definition --task-definition ${ECS_SERVICE}", returnStdout: true).trim()
-                    echo "Task Definition Details: ${taskDefinition}"
+                     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                        def taskDefinition = sh(script: "aws ecs describe-task-definition --task-definition ${ECS_SERVICE}", returnStdout: true).trim()
+                        echo "Task Definition Details: ${taskDefinition}"
+                     }
+
                 }
             }
         }
