@@ -48,7 +48,14 @@ pipeline {
                 }
             }
         }
-
+        stage('Describe Task Definition') {
+            steps {
+                script {
+                    def taskDefinition = sh(script: "aws ecs describe-task-definition --task-definition ${ECS_SERVICE}", returnStdout: true).trim()
+                    echo "Task Definition Details: ${taskDefinition}"
+                }
+            }
+        }
         stage('Deploy to ECS') {
             steps {
                 script {
@@ -56,6 +63,9 @@ pipeline {
                         // Register the new task definition and capture its revision number
                         def registerOutput = sh(script: "aws ecs register-task-definition --cli-input-json file://task_definition.json", returnStdout: true).trim()
                         def newRevision = (registerOutput =~ /"revision": (\d+),/)[0][1]
+
+                        //def registerOutput = sh(script: "aws ecs register-task-definition --cli-input-json file://task_definition.json", returnStdout: true).trim()
+                        //def newRevision = (registerOutput =~ /"revision": (\d+),/)[0][1]
 
                         // Update the ECS service with the new revision
                         sh "aws ecs update-service --region ${AWS_REGION} --cluster ${ECS_CLUSTER} --service ${ECS_SERVICE} --task-definition ${ECS_SERVICE}:${newRevision}"
