@@ -8,7 +8,7 @@ pipeline {
         DOCKERFILE_PATH = 'Dockerfile'
         AWS_CREDENTIALS_ID = 'aws-ecr'
         AWS_REGION = 'eu-west-3'  // Assuming your ECR repository is in this region
-        CUSTOM_TAG = "${env.BUILD_ID}_${new Date().format('yyyyMMddHHmmss')}"
+        CUSTOM_TAG = 'latest' //"${env.BUILD_ID}_${new Date().format('yyyyMMddHHmmss')}"
 
     }
 
@@ -47,24 +47,7 @@ pipeline {
                 }
             }
         }
-        stage('Update Task Definition') {
-            steps {
-                script {
-                    // Read the task definition file
-                   // def taskDefinition = readJSON file: 'task_definition.json'
-                    def taskDefinition = readJSON file: 'task_definition.json'
-                    echo "Original task definition JSON: ${taskDefinition}"
 
-                    // Update the image tag
-                    taskDefinition.containerDefinitions[0].image = "${ECR_REPOSITORY_URL}:${CUSTOM_TAG}"
-
-                    // Write the updated task definition back to the file
-                    writeJSON file: 'task_definition.json', json: taskDefinition
-                    echo "Updated task definition JSON: ${readFile('task_definition.json')}"
-
-                }
-            }
-        }
         stage('Deploy to ECS') {
             steps {
                 script {
@@ -89,3 +72,21 @@ pipeline {
         // Add your other pipeline stages here, e.g., Deploy...
     }
 }
+/* stage('Update Task Definition') {
+            steps {
+                script {
+                    // Read the task definition file
+                   // def taskDefinition = readJSON file: 'task_definition.json'
+                    def taskDefinition = readJSON file: 'task_definition.json'
+                    echo "Original task definition JSON: ${taskDefinition}"
+
+                    // Update the image tag
+                    taskDefinition.containerDefinitions[0].image = "${ECR_REPOSITORY_URL}:${CUSTOM_TAG}"
+
+                    // Write the updated task definition back to the file
+                    writeJSON file: 'task_definition.json', json: taskDefinition
+                    echo "Updated task definition JSON: ${readFile('task_definition.json')}"
+
+                }
+            }
+        } */
