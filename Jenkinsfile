@@ -57,7 +57,7 @@ pipeline {
 
 
                         // Create or update ECS service with security group(s)
-                        sh "aws ecs update-service --region ${AWS_REGION} --cluster ${ecsCluster} --service testservices --task-definition ${taskDefinitionFile}"
+                        sh "aws ecs update-service --region ${AWS_REGION} --cluster ${ecsCluster} --service dev_service --task-definition ${taskDefinitionFile}"
 
                         // Optionally, wait for the service to stabilize
                         // sh "aws ecs wait services-stable --region ${AWS_REGION} --cluster ${ecsCluster} --services your-service-name"

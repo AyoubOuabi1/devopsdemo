@@ -1,5 +1,5 @@
 {
-  "taskDefinitionArn": "arn:aws:ecs:eu-west-3:992906191722:task-definition/testtask:1",
+  "taskDefinitionArn": "arn:aws:ecs:eu-west-3:992906191722:task-definition/ayoub_task_def:1",
   "containerDefinitions": [
     {
       "name": "devopsimage",
@@ -24,7 +24,7 @@
         "logDriver": "awslogs",
         "options": {
           "awslogs-create-group": "true",
-          "awslogs-group": "/ecs/testtask",
+          "awslogs-group": "/ecs/ayoub_task_def",
           "awslogs-region": "eu-west-3",
           "awslogs-stream-prefix": "ecs"
         },
@@ -32,7 +32,7 @@
       }
     }
   ],
-  "family": "testtask",
+  "family": "ayoub_task_def",
   "taskRoleArn": "arn:aws:iam::992906191722:role/dev_role",
   "executionRoleArn": "arn:aws:iam::992906191722:role/ecsTaskExecutionRole",
   "networkMode": "awsvpc",
@@ -82,7 +82,7 @@
     "cpuArchitecture": "X86_64",
     "operatingSystemFamily": "LINUX"
   },
-  "registeredAt": "2024-01-14T16:30:51.316Z",
+  "registeredAt": "2024-01-15T07:58:45.080Z",
   "registeredBy": "arn:aws:iam::992906191722:root",
   "tags": []
 }
