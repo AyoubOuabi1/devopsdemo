@@ -50,30 +50,22 @@ pipeline {
         }
 
         stage('Deploy to ECS') {
-                    steps {
-                        script {
-                            withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-                                // Register the new task definition and capture its revision number
-                                def newRevision = sh(script: "aws ecs register-task-definition --family ${ECS_SERVICE} --container-definitions '[
-                                    {
-                                        \"name\": \"devopsimage\",
-                                        \"image\": \"${ECR_REPOSITORY_URL}:${CUSTOM_TAG}\",
-                                        \"essential\": true
-                                    }
-                                ]' --output json", returnStdout: true).trim()
+            steps {
+                script {
+                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                        // Register the new task definition and capture its revision number
+                        def registerOutput = sh(script: "aws ecs register-task-definition --cli-input-json file://task_definition.json", returnStdout: true).trim()
+                        def newRevision = (registerOutput =~ /"revision": (\d+),/)[0][1]
 
-                                // Extract the new revision number
-                                newRevision = (newRevision =~ /"revision": (\d+),/)[0][1]
+                        // Update the ECS service with the new revision
+                        sh "aws ecs update-service --region ${AWS_REGION} --cluster ${ECS_CLUSTER} --service ${ECS_SERVICE} --task-definition ${ECS_SERVICE}:${newRevision}"
 
-                                // Update the ECS service with the new revision
-                                sh "aws ecs update-service --region ${AWS_REGION} --cluster ${ECS_CLUSTER} --service ${ECS_SERVICE} --task-definition ${ECS_SERVICE}:${newRevision}"
-
-                                // Optionally, wait for the service to stabilize
-                                // sh "aws ecs wait services-stable --region ${AWS_REGION} --cluster ${ECS_CLUSTER} --services ${ECS_SERVICE}"
-                            }
-                        }
+                        // Optionally, wait for the service to stabilize
+                        // sh "aws ecs wait services-stable --region ${AWS_REGION} --cluster ${ECS_CLUSTER} --services ${ECS_SERVICE}"
                     }
                 }
+            }
+        }
 
         // Add your other pipeline stages here, e.g., Deploy...
     }
