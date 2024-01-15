@@ -8,6 +8,8 @@ pipeline {
         DOCKERFILE_PATH = 'Dockerfile'
         AWS_CREDENTIALS_ID = 'aws-ecr'
         AWS_REGION = 'eu-west-3'  // Assuming your ECR repository is in this region
+        CUSTOM_TAG = "${env.BUILD_ID}_${new Date().format('yyyyMMddHHmmss')}"
+
     }
 
     stages {
@@ -36,35 +38,47 @@ pipeline {
                     // Build Docker image
 
                     // Authenticate with ECR and push Docker image
-                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-                        sh "aws ecr get-login-password --region eu-west-3 | docker login --username AWS --password-stdin 992906191722.dkr.ecr.eu-west-3.amazonaws.com"
-                        sh "docker build -t devopsdemorepo ."
-                        sh "docker tag devopsdemorepo:latest 992906191722.dkr.ecr.eu-west-3.amazonaws.com/devopsdemorepo:latest"
-                        sh "docker push 992906191722.dkr.ecr.eu-west-3.amazonaws.com/devopsdemorepo:latest"
-                    }
+                   withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                        sh "aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REPOSITORY_URL}"
+                        sh "docker build -t ${DOCKER_IMAGE_NAME}:${CUSTOM_TAG} ."
+                        sh "docker tag ${DOCKER_IMAGE_NAME}:${CUSTOM_TAG} ${ECR_REPOSITORY_URL}:${CUSTOM_TAG}"
+                        sh "docker push ${ECR_REPOSITORY_URL}:${CUSTOM_TAG}"
+                   }
+                }
+            }
+        }
+        stage('Update Task Definition') {
+            steps {
+                script {
+                    // Read the task definition file
+                    def taskDefinition = readJSON file: 'task_definition.json'
+
+                    // Update the image tag
+                    taskDefinition.containerDefinitions[0].image = "${ECR_REPOSITORY_URL}:${CUSTOM_TAG}"
+
+                    // Write the updated task definition back to the file
+                    writeJSON file: 'task_definition.json', json: taskDefinition
                 }
             }
         }
         stage('Deploy to ECS') {
-           steps {
-               script {
-                   withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+            steps {
+                script {
+                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
                         def ecsCluster = 'devopsdemo'
-                        def taskDefinitionFile = 'task_definition.json'
 
-                         // Register the new task definition (if needed)
-                         sh "aws ecs register-task-definition --cli-input-json file://${taskDefinitionFile}"
-                         def newRevision = sh(returnStdout: true, script: "aws ecs describe-task-definition --task-definition ${taskDefinitionFile} | jq -r '.taskDefinition.revision'").trim()
+                        // Register the new task definition and capture its revision number
+                        def registerOutput = sh(script: "aws ecs register-task-definition --cli-input-json file://task_definition.json", returnStdout: true).trim()
+                        def newRevision = // extract the revision number from registerOutput
 
-                         // Update the ECS service with the new revision
-                         sh "aws ecs update-service --region ${AWS_REGION} --cluster ${ecsCluster} --service dev_service --task-definition ayoub_task_def:${newRevision}"
+                        // Update the ECS service with the new revision
+                        sh "aws ecs update-service --region ${AWS_REGION} --cluster ${ecsCluster} --service dev_service --task-definition ayoub_task_def:${newRevision}"
 
-                         // Optionally, wait for the service to stabilize
-                         // sh "aws ecs wait services-stable --region ${AWS_REGION} --cluster ${ecsCluster} --services your-service-name"
-                   }
-               }
-           }
-
+                        // Optionally, wait for the service to stabilize
+                        // sh "aws ecs wait services-stable --region ${AWS_REGION} --cluster ${ecsCluster} --services your-service-name"
+                    }
+                }
+            }
         }
 
         // Add your other pipeline stages here, e.g., Deploy...
