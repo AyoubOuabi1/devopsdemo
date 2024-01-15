@@ -48,7 +48,7 @@ pipeline {
                 }
             }
         }
-        stage('Describe Task Definition') {
+        /* stage('Describe Task Definition') {
             steps {
                 script {
                      withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
@@ -58,7 +58,7 @@ pipeline {
 
                 }
             }
-        }
+        } */
         stage('Deploy to ECS') {
             steps {
                 script {
