@@ -65,7 +65,10 @@ pipeline {
                     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
                         // Register the new task definition and capture its revision number
                         def registerOutput = sh(script: "aws ecs register-task-definition --cli-input-json file://task_definition.json", returnStdout: true).trim()
+
                         def newRevision = (registerOutput =~ /"revision": (\d+),/)[0][1]
+                        //def TASK_REVISION=sh(script : "aws ecs describe-task-definition --task-definition ${ECS_SERVICE} | egrep "revision" | tr "/" " " | awk '{print $2}' | sed 's/"$//'")
+                         def TASK_REVISION = sh(script: "aws ecs describe-task-definition --task-definition ${ECS_SERVICE} --query 'taskDefinition.revision' --output text", returnStdout: true).trim()
 
                         //def registerOutput = sh(script: "aws ecs register-task-definition --cli-input-json file://task_definition.json", returnStdout: true).trim()
                         //def newRevision = (registerOutput =~ /"revision": (\d+),/)[0][1]
