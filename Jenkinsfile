@@ -73,7 +73,7 @@ pipeline {
 
 
                         // Update the ECS service with the new revision
-                        sh "aws ecs update-service --region ${AWS_REGION} --cluster ${ECS_CLUSTER} --service ${ECS_SERVICE} --task-definition ayoub_task_def"
+                        def ret = sh (script : "aws ecs update-service --region ${AWS_REGION} --cluster ${ECS_CLUSTER} --service ${ECS_SERVICE} --task-definition ayoub_task_def")
 
 
                     }
