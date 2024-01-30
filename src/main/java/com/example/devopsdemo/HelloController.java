@@ -14,7 +14,7 @@ public class HelloController {
     }
     @GetMapping("/ayoub")
    public String hellop(){
-        return "Hello meeeeeee  njnmmm s";
+        return "Hello meeeeeee  njnmm";
     }
 
 
