@@ -82,6 +82,7 @@ Connect to http://<your_server_public_DNS>:8080 from your browser.
 
 Replace `<your_server_public_DNS>` with the actual public DNS of your EC2 instance.
 ```
+![unlock_jenkins](https://github.com/AyoubOuabi1/devopsdemo/assets/112890204/17d50109-358f-49b8-b6ca-3229fd754f2d)
 
 ## Step 10 : Retrieve Initial Admin Password
 As prompted, enter the password found in /var/lib/jenkins/secrets/initialAdminPassword. Use the following command to display this password:
@@ -89,3 +90,59 @@ As prompted, enter the password found in /var/lib/jenkins/secrets/initialAdminPa
 ```bash
 sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 ```
+## Step 10 : Install Git 
+
+Install git 
+
+```bash
+sudo yum install git
+```
+
+## Step 11 : To add Git to Jenkins:
+
+Open the Jenkins dashboard in your web browser by navigating to http://<your_server_public_DNS>:8080.
+
+Log in to Jenkins using your credentials.
+
+Click on "Manage Jenkins" in the Jenkins dashboard.
+
+Select "Global Tool Configuration."
+
+Scroll down to the "Git" section.
+
+Click on "Add Git" to add a new Git installation.
+
+Provide a name for the Git installation (e.g., "Default" or "Git").
+
+Specify the path to the Git executable. This is typically located at ```bash  /usr/bin/git ``` on Amazon Linux.
+
+![image](https://github.com/AyoubOuabi1/devopsdemo/assets/112890204/7156a2f2-3cf6-4710-95ff-7bab410b6041)
+
+Click "Save" to save the configuration.
+
+## Step 12 : Install Docker :
+
+
+
+
+Run the following commands to install Docker:
+
+
+```bash
+sudo yum install docker
+```
+
+Start the docker service 
+
+```bash
+sudo service docker start
+```
+Add the ec2-user to the docker group to run Docker commands without 
+
+```bash
+sudo usermod -a -G docker ec2-user
+```
+
+## Step 13 : Restart Jenkins:
+
+After adding the Jenkins user to the docker group, restart Jenkins to apply the changes.
