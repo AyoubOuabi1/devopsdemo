@@ -18,7 +18,7 @@ pipeline {
             steps {
                 script {
                      withSonarQubeEnv('sonar') {
-                            sh "${mvnHome}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=devopsdemo -Dsonar.projectName='devopsdemo'"
+                            bat "${mvnHome}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=devopsdemo -Dsonar.projectName='devopsdemo'"
                         }
                 }
             }
