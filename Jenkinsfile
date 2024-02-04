@@ -15,11 +15,10 @@ pipeline {
 
     stages {
        stage('SonarQube Analysis') {
-           steps {
-               withSonarQubeEnv('sonarQube') { // Replace with your server name
-                 sh "mvn sonar:sonar"
-               }
-             }
+          def mvn = tool 'Default Maven';
+          withSonarQubeEnv() {
+            sh "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=devopsdemo -Dsonar.projectName='devopsdemo'"
+          }
         }
 
         stage('Check ECR Connection') {
