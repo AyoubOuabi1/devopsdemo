@@ -86,39 +86,38 @@ pipeline {
                 }
             }
         } */
-        stage('Deploy to ECS') {
-            steps {
-                script {
-                    withCredentials([
-                        [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']
-                    ]) {
-                        // Read the existing task definition JSON from file
-                        def taskDefinitionFile = 'task_definition.json'
-                        def existingTaskDefinition = readFile(taskDefinitionFile)
-                        def taskDefJson = evaluateJson(existingTaskDefinition)
+        stage('Update Task Definition') {
+                    steps {
+                        script {
+                            withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                                // Load current JSON, update image with CUSTOM_TAG
+                                def taskDefJson = load('task_definition.json')
+                                taskDefJson.containerDefinitions[0].image = "${ECR_REPOSITORY_URL}:${env.CUSTOM_TAG}"
 
-                        // Update the image field with the new image from Jenkins
-                        taskDefJson.containerDefinitions[0].image = "${ECR_REPOSITORY_URL}:${CUSTOM_TAG}"
-
-                        // Save the updated task definition JSON to a file
-                        def updatedTaskDefinitionFile = 'updated_task_definition.json'
-                        writeFile file: updatedTaskDefinitionFile, text: JsonOutput.toJson(taskDefJson)
-
-                        // Register the updated task definition
-                        def registerTaskDefinitionCmd = "aws ecs register-task-definition --region ${AWS_REGION} --family ayoub_task_def --container-definitions file://${updatedTaskDefinitionFile}"
-                        def registerTaskDefinitionOutput = sh(script: registerTaskDefinitionCmd, returnStdout: true).trim()
-                        echo "Registered updated task definition: ${registerTaskDefinitionOutput}"
-
-                        // Update the ECS service with the new task definition
-                        def updateServiceCmd = "aws ecs update-service --region ${AWS_REGION} --cluster ${ECS_CLUSTER} --service ${ECS_SERVICE} --task-definition ayoub_task_def"
-                        def updateServiceOutput = sh(script: updateServiceCmd, returnStdout: true).trim()
-                        echo "Updated ECS service: ${updateServiceOutput}"
-
-                        // Clean up: Delete the temporary updated task definition file
-                        sh "rm -f ${updatedTaskDefinitionFile}"
+                                // Save updated JSON with proper path and error handling
+                                writeFile file: 'updated_task_definition.json', text: JsonOutput.toJson(taskDefJson)
+                            }
+                        }
                     }
-                }
-            }
+        }
+
+       stage('Register & Deploy to ECS') {
+                   steps {
+                       script {
+                           withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                               // Register updated task definition
+                               def registerOutput = sh(script: "aws ecs register-task-definition --region ${AWS_REGION} --family ayoub_task_def --container-definitions file://updated_task_definition.json", returnStdout: true).trim()
+                               echo "Registered updated task definition: ${registerOutput}"
+
+                               // Update ECS service with new task definition
+                               def updateOutput = sh(script: "aws ecs update-service --region ${AWS_REGION} --cluster ${ECS_CLUSTER} --service ${ECS_SERVICE} --task-definition ${registerOutput}", returnStdout: true).trim()
+                               echo "Updated ECS service: ${updateOutput}"
+
+                               // Clean up
+                               sh 'rm -f updated_task_definition.json'
+                           }
+                       }
+                   }
        }
     }
 }
