@@ -39,6 +39,7 @@ pipeline {
                 }
             }
        }
+
        stage('Check ECR Connection') {
             steps {
                 script {
