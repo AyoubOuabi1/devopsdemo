@@ -17,6 +17,11 @@ public class HelloController {
         return "Hello meeeeeee  njnmm";
     }
 
+ @GetMapping("/ayoub")
+   public String helloppp(){
+        return "Hello meeeeeee  njnmm";
+    }
+
 
 
 }
