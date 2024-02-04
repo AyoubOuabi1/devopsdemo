@@ -7,7 +7,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 class DevopsdemoApplicationTests {
 
     @Test
-    void contextLoads() {
+    void testService() {
+
     }
 
 }
