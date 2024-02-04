@@ -93,7 +93,7 @@ pipeline {
                         [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']
                     ]) {
                         // Read the existing task definition JSON from file
-                        def taskDefinitionFile = 'task-def.json'
+                        def taskDefinitionFile = 'task_definition.json'
                         def existingTaskDefinition = readFile(taskDefinitionFile)
                         def taskDefJson = evaluateJson(existingTaskDefinition)
 

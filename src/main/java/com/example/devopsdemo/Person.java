@@ -8,4 +8,5 @@ public class Person {
     String Adress;
     String email;
     String password;
+    String passsword;
 }
