@@ -13,6 +13,7 @@ pipeline {
         ECS_SERVICE = 'dev_service'
     }
 
+
     stages {
        /* stage('SonarQube Analysis') {
            steps {
