@@ -65,7 +65,6 @@ pipeline {
                         }
                     }
         }
-
        stage('Register & Deploy to ECS') {
                    steps {
                        script {
