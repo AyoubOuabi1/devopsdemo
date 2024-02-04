@@ -55,7 +55,7 @@ pipeline {
            steps {
                script {
                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-                       def taskDefJson = readJSON file: 'task_definition.json'
+                       def taskDefJson = readFile file: 'task_definition.json'
                        //def taskDefJson = load('task_definition.json')
                        taskDefJson.containerDefinitions[0].image = "${ECR_REPOSITORY_URL}:${env.CUSTOM_TAG}"
                        writeFile file: 'updated_task_definition.json', text: JsonOutput.toJson(taskDefJson)
