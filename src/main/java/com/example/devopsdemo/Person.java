@@ -6,4 +6,5 @@ public class Person {
     String name;
     String Adress;
     String email;
+    String password;
 }
