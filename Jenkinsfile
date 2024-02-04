@@ -70,7 +70,7 @@ pipeline {
                        script {
                            withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
                                // Register updated task definition
-                               def registerOutput = sh(script: "aws ecs register-task-definition --region ${AWS_REGION} --family ayoub_task_def --container-definitions file://updated_task_definition.json", returnStdout: true).trim()
+                               def registerOutput = sh(script: "aws ecs register-task-definition --region ${AWS_REGION} --family ayoub_task_def  --cli-input-json file://updated_task_definition.json", returnStdout: true).trim()
                                echo "Registered updated task definition: ${registerOutput}"
 
                                // Update ECS service with new task definition
