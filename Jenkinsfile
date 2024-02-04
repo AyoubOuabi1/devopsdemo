@@ -14,11 +14,16 @@ pipeline {
     }
 
     stages {
+     stage('SonarQube Analysis') {
+
+      }
        stage('SonarQube Analysis') {
-          def mvn = tool 'Default Maven';
-          withSonarQubeEnv() {
-            sh "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=devopsdemo -Dsonar.projectName='devopsdemo'"
-          }
+           steps {
+                def mvn = tool 'Default Maven';
+                       withSonarQubeEnv() {
+                         sh "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=devopsdemo -Dsonar.projectName='devopsdemo'"
+                       }
+             }
         }
 
         stage('Check ECR Connection') {
