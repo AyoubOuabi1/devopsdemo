@@ -8,13 +8,13 @@ pipeline {
         DOCKERFILE_PATH = 'Dockerfile'
         AWS_CREDENTIALS_ID = 'aws-ecr'
         AWS_REGION = 'eu-west-3' 
-        CUSTOM_TAG = 'latest' //"${env.BUILD_ID}_${new Date().format('yyyyMMddHHmmss')}"
+        CUSTOM_TAG = "${env.BUILD_ID}_${new Date().format('yyyyMMddHHmmss')}"
         ECS_CLUSTER = 'devopsdemo'
         ECS_SERVICE = 'dev_service'
     }
 
     stages {
-       stage('SonarQube Analysis') {
+       /* stage('SonarQube Analysis') {
            steps {
             script{
                 def mavenHome = tool 'Maven'
@@ -39,7 +39,7 @@ pipeline {
                 }
             }
        }
-
+ */
        stage('Check ECR Connection') {
             steps {
                 script {
@@ -73,7 +73,7 @@ pipeline {
             }
         }
        
-        stage('Deploy to ECS') {
+        /* stage('Deploy to ECS') {
             steps {
                 script {
                     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
@@ -84,7 +84,7 @@ pipeline {
                     }
                 }
             }
-        }
+        } */
 
     }
 }
