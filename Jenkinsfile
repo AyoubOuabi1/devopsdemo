@@ -59,7 +59,7 @@ pipeline {
                        def taskDefJson = load('task_definition.json')
                        echo "start task definition ${taskDefJson}"
                       //  def jsonSlurper = new JsonSlurper()
-                       taskDefJson = JsonSlurper().parseText(taskDefJson)
+                      // taskDefJson = JsonSlurper().parseText(taskDefJson)
 
                           taskDefJson.containerDefinitions.each { containerDef ->
                                 containerDef.image = "${ECR_REPOSITORY_URL}:${env.CUSTOM_TAG}"
