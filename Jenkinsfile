@@ -57,10 +57,14 @@ pipeline {
                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
                        def taskDefJson = readFile file: 'task_definition.json'
                        //def taskDefJson = load('task_definition.json')
-                       echo (taskDefJson)
+                       echo "start task definition ${taskDefJson}"
                        taskDefJson.containerDefinitions[0].image = "${ECR_REPOSITORY_URL}:${env.CUSTOM_TAG}"
+                       echo "end writing image"
+
                        writeFile file: 'updated_task_definition.json', text: JsonOutput.toJson(taskDefJson)
-                       def registerOutput = sh(script: "aws ecs register-task-definition --region ${AWS_REGION} --family ayoub_task_def  --cli-input-json file://updated_task_definition.json", returnStdout: true).trim()
+
+                        echo "start saving task def"
+                       def registerOutput = sh(script: "aws ecs register-task-definition --region ${AWS_REGION} --family ayoub_task_def --container-definitions  --cli-input-json file://updated_task_definition.json", returnStdout: true).trim()
                        echo "Registered updated task definition: ${registerOutput}"
                        def updateOutput = sh(script: "aws ecs update-service --region ${AWS_REGION} --cluster ${ECS_CLUSTER} --service ${ECS_SERVICE} --task-definition ${registerOutput}", returnStdout: true).trim()
                        echo "Updated ECS service: ${updateOutput}"
