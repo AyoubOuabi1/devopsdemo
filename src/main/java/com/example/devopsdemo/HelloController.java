@@ -10,25 +10,7 @@ import org.springframework.web.bind.annotation.*;
 public class HelloController {
     @GetMapping("")
    public String hello(){
-        return "Hello ghoulam";
-    }
-    @GetMapping("/ayoub")
-   public String hellop(){
-        return "Hello meeeeeee  njnmm";
-    }
-  @GetMapping("/ayoubq")
-   public String helddlop(){
-        return "Hello meeeeeee  njnmm";
-    }
-
-
- @GetMapping("/ayoubbjhlb")
-   public String helloppp(){
-        return "Hello meeeeeee  njnmm";
-    }
-@GetMapping("/mee")
-   public String heddlloppp(){
-        return "Hello meeeeeee  njnmm";
+        return "Hello js";
     }
 
 
