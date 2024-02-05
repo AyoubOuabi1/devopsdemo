@@ -12,7 +12,7 @@ public class HelloController {
    public String hello(){
         return "Hello js";
     }
- @GetMapping("")
+ @GetMapping("/test")
    public String test(){
         return " moustapha";
     }
