@@ -59,11 +59,11 @@ pipeline {
                        //def taskDefJson = load('task_definition.json')
                        echo "start task definition ${taskDefJson}"
                       //  def jsonSlurper = new JsonSlurper()
-                       taskDefJson = JsonSlurper().parseText(taskDefJson)
+                      // taskDefJson = JsonSlurper().parseText(taskDefJson)
 
-                          taskDefJson.containerDefinitions.each { containerDef ->
+                      taskDefJson.containerDefinitions.each { containerDef ->
                                 containerDef.image = "${ECR_REPOSITORY_URL}:${env.CUSTOM_TAG}"
-                        }
+                       }
                        echo "end writing image"
 
                        writeFile file: 'updated_task_definition.json', text: JsonOutput.toJson(taskDefJson)
