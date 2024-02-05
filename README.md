@@ -1,11 +1,15 @@
-# Downloading and Installing Jenkins on AWS EC2
+# Downloading and Installing Jenkins and SonarQube on AWS EC2
 
-This guide provides step-by-step instructions for downloading and installing Jenkins on an Amazon EC2 instance with Amazon Linux. Before you begin, ensure you have an EC2 instance running Amazon Linux and connect to the instance.
+This guide provides step-by-step instructions for downloading and installing Jenkins and SonarQube on an Amazon EC2 instance. Before you begin, ensure you have an EC2 instance running Amazon Linux and connect to the instance.
 
 ## Prerequisites
 
-- An Amazon EC2 instance with Amazon Linux.
+- An Amazon EC2 instance with Amazon Linux(for Jenkins).
+- An Amazon EC2 instance with Ubunto(for SonarQube).
 - Access to the EC2 instance through SSH.
+
+
+## Start Intalling Jenkins
 
 ## Introduction
 
@@ -16,14 +20,14 @@ Completing the following steps will enable you to download and install Jenkins o
 Ensure that your software packages are up to date on your instance by using the following command to perform a quick software update:
 
 ```bash
-[ec2-user ~]$ sudo yum update –y
+sudo yum update –y
 ```
 ## Step 2: Add Jenkins Repository
 
 Add the Jenkins repository using the following command:
 
 ```bash
-[ec2-user ~]$ sudo wget -O /etc/yum.repos.d/jenkins.repo \ https://pkg.jenkins.io/redhat-stable/jenkins.repo
+ sudo wget -O /etc/yum.repos.d/jenkins.repo \ https://pkg.jenkins.io/redhat-stable/jenkins.repo
 ```
 
 ## Step 3: Import Jenkins-CI Key
@@ -31,8 +35,10 @@ Add the Jenkins repository using the following command:
 Import a key file from Jenkins-CI to enable installation from the package:
 
 ```bash
-[ec2-user ~]$ sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
-[ec2-user ~]$ sudo yum upgrade
+ sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+```
+```bash
+ sudo yum upgrade
 ```
 
 ## Step 4: Install Java
@@ -40,14 +46,14 @@ Import a key file from Jenkins-CI to enable installation from the package:
 Install Java :
 
 ```bash
-[ec2-user ~]$ sudo dnf install java-17-amazon-corretto -y
+ sudo dnf install java-17-amazon-corretto -y
 ```
 ## Step 5: Install Jenkins
 
 Install Jenkins:
 
 ```bash
-[ec2-user ~]$ sudo yum install jenkins -y
+ sudo yum install jenkins -y
 ```
 
 ## Step 6: Enable Jenkins Service
@@ -55,7 +61,7 @@ Install Jenkins:
 Enable the Jenkins service to start at boot:
 
 ```bash
-[ec2-user ~]$ sudo systemctl enable jenkins
+ sudo systemctl enable jenkins
 ```
 
 ## Step 7: Start Jenkins Service
@@ -63,14 +69,14 @@ Enable the Jenkins service to start at boot:
 Start Jenkins as a service:
 
 ```bash
-[ec2-user ~]$ sudo systemctl start jenkins
+sudo systemctl start jenkins
 ```
 ## Step 8: Check Jenkins Service Status
 
 You can check the status of the Jenkins service using the command: 
 
 ```bash
-[ec2-user ~]$ sudo systemctl status jenkins
+ sudo systemctl status jenkins
 ```
 
 ## Step 9: Access Jenkins Management Interface
@@ -146,3 +152,114 @@ sudo usermod -a -G docker ec2-user
 ## Step 13 : Restart Jenkins:
 
 After adding the Jenkins user to the docker group, restart Jenkins to apply the changes.
+
+
+## Introduction
+In this section, we will guide you through the process of downloading and installing SonarQube on your Ubuntu EC2 instance.
+
+## Step 1: Update Software Packages
+
+Ensure that your software packages are up to date on your Ubuntu instance by using the following command to perform a quick software update:
+
+```bash
+ sudo apt update && sudo apt upgrade -y
+```
+
+## Step 2: Install OpenJDK
+
+SonarQube requires Java to run. Install OpenJDK on your Ubuntu instance:
+
+```bash
+sudo apt install openjdk-17-jdk -y
+
+```
+## Step 3: Download and install SonarQube
+
+Download and install SonarQube by running the following commands:
+
+```bash
+sudo wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-9.8.0.63668.zip
+```
+```bash
+sudo apt-get install zip -y
+```
+```bash
+sudo mv sonarqube-9.8.0.63668 /opt/sonarqube
+```
+
+## Step 4: Configure SonarQube
+
+ Create a group name sonar
+```bash
+ sudo groupadd sonar
+```
+
+ Give ownership permission to the sonar user and group.
+```bash
+sudo useradd -d /opt/sonarqube -g sonar sonar
+
+```
+
+```bash
+sudo chown sonar:sonar /opt/sonarqube -R
+```
+
+
+
+This file is now required for SonarQube to run as a service.
+```bash
+sudo nano /etc/systemd/system/sonar.service
+```
+
+Add the following to the file.
+
+
+```bash
+[Unit]
+
+Description=SonarQube service
+
+After=syslog.target network.target
+
+
+[Service]
+
+Type=forking
+
+
+ExecStart=/opt/sonarqube/bin/linux-x86-64/sonar.sh start
+
+ExecStop=/opt/sonarqube/bin/linux-x86-64/sonar.sh stop
+
+
+User=sonar
+
+Group=sonar
+
+Restart=always
+
+
+LimitNOFILE=65536
+
+LimitNPROC=4096
+
+
+[Install]
+
+WantedBy=multi-user.target
+```
+
+The next step is to enable and start SonarQube as a service.
+
+```bash
+sudo systemctl enable sonar
+```
+
+```bash
+sudo systemctl start sonar
+```
+
+```bash
+sudo systemctl status sonar
+```
+
