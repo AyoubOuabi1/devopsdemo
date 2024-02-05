@@ -8,11 +8,12 @@ This guide provides step-by-step instructions for downloading and installing Jen
 - An Amazon EC2 instance with Ubunto(for SonarQube).
 - Access to the EC2 instance through SSH.
 
+
+## Start Intalling Jenkins
+
 ## Introduction
 
 Completing the following steps will enable you to download and install Jenkins on your AWS EC2 instance. Follow the steps below after connecting to your EC2 instance.
-
-## Start Intalling Jenkins
 
 ## Step 1: Update Software Packages
 
