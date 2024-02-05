@@ -58,8 +58,8 @@ pipeline {
                        //def taskDefJson = readFile file: 'task_definition.json'
                        def taskDefJson = load('task_definition.json')
                        echo "start task definition ${taskDefJson}"
-                        def jsonSlurper = new JsonSlurper()
-                       taskDefJson = jsonSlurper.parseText(taskDefJson)
+                      //  def jsonSlurper = new JsonSlurper()
+                       taskDefJson = new groovy.json.JsonSlurper().parseText(taskDefJson)
 
                           taskDefJson.containerDefinitions.each { containerDef ->
                                 containerDef.image = "${ECR_REPOSITORY_URL}:${env.CUSTOM_TAG}"
