@@ -21,6 +21,10 @@ public class HelloController {
    public String helloppp(){
         return "Hello meeeeeee  njnmm";
     }
+@GetMapping("/mee")
+   public String heddlloppp(){
+        return "Hello meeeeeee  njnmm";
+    }
 
 
 
