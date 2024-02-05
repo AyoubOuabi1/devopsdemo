@@ -178,21 +178,16 @@ sudo apt install openjdk-17-jdk -y
 Download and install SonarQube by running the following commands:
 
 ```bash
-sudo wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-9.1.0.47736.zip
+sudo wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-9.8.0.63668.zip
 ```
 ```bash
-sudo apt-get install zip unzip
+sudo apt-get install zip -y
 ```
 ```bash
-sudo unzip sonarqube-9.1.0.47736.zip
+sudo mv sonarqube-9.8.0.63668 /opt/sonarqube
 ```
 
-## Step 4: Change the sonarqube extracted directory name to sonarqube.
-
-```bash
-sudo mv sonarqube-9.1.0.47736 sonarqube
-```
-## Step 5: 4:Configure SonarQube
+## Step 4: Configure SonarQube
 
  Create a group name sonar
 ```bash
@@ -201,27 +196,23 @@ sudo mv sonarqube-9.1.0.47736 sonarqube
 
  Give ownership permission to the sonar user and group.
 ```bash
- sudo useradd -d /opt/sonarqube -g sonar sonar
+sudo useradd -d /opt/sonarqube -g sonar sonar
 
-```
-```bash
-sudo mkdir /opt/sonarqube
 ```
 
 ```bash
- sudo chown -R sonar:sonar /opt/sonarqube
+sudo chown sonar:sonar /opt/sonarqube -R
 ```
 
-Edit the sonar script file and set RUN_AS_USER
-```bash 
-sudo nano /opt/sonarqube/bin/linux-x86-64/sonar.sh
-```
 
-```bash
-RUN_AS_USER=sonar
-```
 
 This file is now required for SonarQube to run as a service.
+```bash
+sudo nano /etc/systemd/system/sonar.service
+```
+
+Add the following to the file.
+
 
 ```bash
 [Unit]
