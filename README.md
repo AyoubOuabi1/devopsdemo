@@ -179,6 +179,11 @@ Download and install SonarQube by running the following commands:
 
 ```bash
 sudo wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-9.1.0.47736.zip
+```
+```bash
+sudo apt-get install zip unzip
+```
+```bash
 sudo unzip sonarqube-9.1.0.47736.zip
 ```
 
