@@ -55,11 +55,14 @@ pipeline {
            steps {
                script {
                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-                       def taskDefJson = load file: 'task_definition.json'
+                     //  def taskDefJson = load file: 'task_definition.json'
                        //def taskDefJson = load('task_definition.json')
+                        String jsonText = readFile file: 'task_definition.json'
+                           withGroovy(jsonText) {
+                               def taskDefJson = new groovy.json.JsonSlurper().parseText(it)
+
+
                        echo "start task definition ${taskDefJson}"
-                      //  def jsonSlurper = new JsonSlurper()
-                      // taskDefJson = JsonSlurper().parseText(taskDefJson)
 
                       taskDefJson.containerDefinitions.each { containerDef ->
                                 containerDef.image = "${ECR_REPOSITORY_URL}:${env.CUSTOM_TAG}"
@@ -74,6 +77,7 @@ pipeline {
                        def updateOutput = sh(script: "aws ecs update-service --region ${AWS_REGION} --cluster ${ECS_CLUSTER} --service ${ECS_SERVICE} --task-definition ${registerOutput}", returnStdout: true).trim()
                        echo "Updated ECS service: ${updateOutput}"
                        sh 'rm -f updated_task_definition.json'
+                   }
                    }
                }
            }
