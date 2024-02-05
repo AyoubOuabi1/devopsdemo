@@ -44,16 +44,16 @@ pipeline {
                     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
                         sh "aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REPOSITORY_URL}"
                          // Tagging the image with custom tag
-                            sh "docker tag ${DOCKER_IMAGE_NAME}:${CUSTOM_TAG} ${ECR_REPOSITORY_URL}:${CUSTOM_TAG}"
+                         sh "docker tag ${DOCKER_IMAGE_NAME}:${CUSTOM_TAG} ${ECR_REPOSITORY_URL}:${CUSTOM_TAG}"
 
                             // Pushing the image with custom tag
-                            sh "docker push ${ECR_REPOSITORY_URL}:${CUSTOM_TAG}"
+                         sh "docker push ${ECR_REPOSITORY_URL}:${CUSTOM_TAG}"
 
                             // Tagging the image with latest
-                            sh "docker tag ${DOCKER_IMAGE_NAME}:${CUSTOM_TAG} ${ECR_REPOSITORY_URL}:latest"
+                         sh "docker tag ${DOCKER_IMAGE_NAME}:${CUSTOM_TAG} ${ECR_REPOSITORY_URL}:latest"
 
                             // Pushing the image with latest tag
-                            sh "docker push ${ECR_REPOSITORY_URL}:latest"
+                         sh "docker push ${ECR_REPOSITORY_URL}:latest"
                     }
                 }
             }
@@ -71,5 +71,6 @@ pipeline {
                            }
                        }
                    }
+       }
     }
 }
