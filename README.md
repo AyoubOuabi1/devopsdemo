@@ -205,6 +205,10 @@ sudo mv sonarqube-9.1.0.47736 sonarqube
 
 ```
 ```bash
+sudo mkdir /opt/sonarqube
+```
+
+```bash
  sudo chown -R sonar:sonar /opt/sonarqube
 ```
 
