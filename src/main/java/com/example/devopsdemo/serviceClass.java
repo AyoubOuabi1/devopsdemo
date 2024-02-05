@@ -8,5 +8,8 @@ public class serviceClass {
 public static boolean isServicedd(){
         return false;
     }
+    public static boolean isServichhedd(){
+        return false;
+    }
 
 }
