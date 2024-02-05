@@ -16,6 +16,10 @@ public class HelloController {
    public String hellop(){
         return "Hello meeeeeee  njnmm";
     }
+  @GetMapping("/ayoubq")
+   public String helddlop(){
+        return "Hello meeeeeee  njnmm";
+    }
 
  @GetMapping("/ayoubbjhlb")
    public String helloppp(){
