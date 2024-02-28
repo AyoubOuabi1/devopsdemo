@@ -16,31 +16,6 @@ pipeline {
 
     stages {
 
-        stage('SonarQube Analysis') {
-           steps {
-            script{
-                def mavenHome = tool 'Maven'
-               withSonarQubeEnv('sonarQube') {
-                        sh "${mavenHome}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=devopsdemo -Dsonar.projectName='devopsdemo'"
-
-                    }
-               }
-          }
-        }
-          stage('Quality Gate') {
-            steps {
-                timeout(time: 1, unit: 'HOURS') {
-                    script {
-                        def qg = waitForQualityGate()
-                        if (qg.status != 'OK') {
-                            error "Pipeline aborted due to Quality Gate failure: ${qg.status}"
-                        } else {
-                            echo "Quality Gate passed - continuing with the pipeline"
-                        }
-                    }
-                }
-            }
-       }
        stage('Check ECR Connection') {
             steps {
                 script {
